@@ -191,7 +191,92 @@ def main():
         for i in range(len(proj_years)-1):
             plot_price_conn(x_proj[i], price_low[-len(proj_years)+i], x_proj[i+1], price_low[-len(proj_years)+i+1])
             plot_price_conn(x_proj[i], price_high[-len(proj_years)+i], x_proj[i+1], price_high[-len(proj_years)+i+1])
+        if insert_current:
+            y_last_hist = price_hist_extended[len(hist_years)-1]
+            y_current = price_hist_extended[len(hist_years)]
+            y_low_proj0 = price_low_proj[0]
+            y_high_proj0 = price_high_proj[0]
+            plot_price_conn(x_hist[-1], y_last_hist, x_current[0], y_current)
+            plot_price_conn(x_current[0], y_current, x_proj[0], y_low_proj0)
+            plot_price_conn(x_current[0], y_current, x_proj[0], y_high_proj0)
+        else:
+            y_last_hist = price_hist_extended[len(hist_years)-1]
+            y_low_proj0 = price_low_proj[0]
+            y_high_proj0 = price_high_proj[0]
+            plot_price_conn(x_hist[-1], y_last_hist, x_proj[0], y_low_proj0)
+            plot_price_conn(x_hist[-1], y_last_hist, x_proj[0], y_high_proj0)
 
+        def annotate_prices(ax, x_vals, y_vals, color):
+            for x, y in zip(x_vals, y_vals):
+                if y is not None:
+                    ax.annotate(f"${y:.2f}", (x, y), textcoords="offset points", xytext=(0, 8),
+                                ha='center', fontsize=9, color=color)
+
+        annotate_prices(ax2, x_hist, price_hist_extended[:len(hist_years)], 'blue')
+        if insert_current:
+            annotate_prices(ax2, x_current, [price_hist_extended[len(hist_years)]], 'purple')
+        annotate_prices(ax2, x_proj, price_low[-len(proj_years):], 'red')
+        annotate_prices(ax2, x_proj, price_high[-len(proj_years):], 'green')
+
+        def annotate_proj_change(ax, x_start, y_start, x_end, y_end, color, label):
+            if y_start is None or y_end is None:
+                return
+            pct_change = (y_end - y_start) / y_start * 100
+            x_mid = (x_start + x_end) / 2
+            y_mid = (y_start + y_end) / 2
+            offset_y = 30 if color == 'green' else -40
+            ax.annotate(f"{label}\n{pct_change:+.1f}%",
+                xy=(x_mid, y_mid),
+                xytext=(0, offset_y),
+                textcoords='offset points',
+                ha='center',
+                fontsize=9,
+                color=color,
+                arrowprops=dict(arrowstyle='->', color=color, lw=1))
+
+        if insert_current:
+            x_current_idx = len(hist_years)
+            x_first_proj_idx = len(hist_years) + 1
+            y_current_price = price_hist_extended[x_current_idx]
+            y_low_first_proj = price_low_proj[0]
+            y_high_first_proj = price_high_proj[0]
+            annotate_proj_change(ax2, x_current_idx, y_current_price,
+                                 x_first_proj_idx, y_low_first_proj, 'red', "Low Price")
+            annotate_proj_change(ax2, x_current_idx, y_current_price,
+                                 x_first_proj_idx, y_high_first_proj, 'green', "High Price")
+        else:
+            x_last_hist_idx = len(hist_years) - 1
+            x_first_proj_idx = len(hist_years)
+            y_last_hist_price = price_hist_extended[x_last_hist_idx]
+            y_low_first_proj = price_low_proj[0]
+            y_high_first_proj = price_high_proj[0]
+            annotate_proj_change(ax2, x_last_hist_idx, y_last_hist_price,
+                                 x_first_proj_idx, y_low_first_proj, 'red', "Low Price")
+            annotate_proj_change(ax2, x_last_hist_idx, y_last_hist_price,
+                                 x_first_proj_idx, y_high_first_proj, 'green', "High Price")
+
+        def scale_ylim(ax):
+            ymin, ymax = ax.get_ylim()
+            ax.set_ylim(ymin, ymax * 1.15)
+
+        scale_ylim(ax1)
+        scale_ylim(ax2)
+
+        # 🔼 Add annotations for Revenue and Net Income
+        def annotate_financials(ax, x_vals, y_vals, color, prefix=""):
+            for x, y in zip(x_vals, y_vals):
+                if y is not None:
+                    ax.annotate(f"{prefix}{y:.2f}", (x, y),
+                                textcoords="offset points", xytext=(0, 8),
+                                ha='center', fontsize=9, color=color)
+
+        annotate_financials(ax1, x_hist, rev_combined[:len(hist_years)], 'tab:blue', prefix="$")
+        annotate_financials(ax1, x_hist, ni_combined[:len(hist_years)], 'tab:orange', prefix="$")
+        if insert_current:
+            annotate_financials(ax1, x_current, [rev_combined[len(hist_years)]], 'tab:blue', prefix="$")
+            annotate_financials(ax1, x_current, [ni_combined[len(hist_years)]], 'tab:orange', prefix="$")
+        annotate_financials(ax1, x_proj, rev_combined[-len(proj_years):], 'tab:blue', prefix="$")
+        annotate_financials(ax1, x_proj, ni_combined[-len(proj_years):], 'tab:orange', prefix="$")    
         st.pyplot(fig)
 
 if __name__ == "__main__":
