@@ -67,12 +67,12 @@ def main():
     ni_growth = ni_growth_input
 
     st.markdown("**Low P/E Estimate**")
-    pe_low_slider = st.slider("Low P/E Slider", min_value=10.0, max_value=100.0, value=10.0, step=1)
+    pe_low_slider = st.slider("Low P/E Slider", min_value=10.0, max_value=100.0, value=10.0, step=1.0)
     pe_low_input = st.number_input("Or manually enter Low P/E", value=pe_low_slider, step=0.5)
     pe_low = pe_low_input
 
     st.markdown("**High P/E Estimate**")
-    pe_high_slider = st.slider("High P/E Slider", min_value=10.0, max_value=200.0, value=20.0, step=1)
+    pe_high_slider = st.slider("High P/E Slider", min_value=10.0, max_value=200.0, value=20.0, step=1.0)
     pe_high_input = st.number_input("Or manually enter High P/E", value=pe_high_slider, step=0.5)
     pe_high = pe_high_input
 
