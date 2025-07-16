@@ -5,13 +5,13 @@ import matplotlib.pyplot as plt
 
 def get_financials(ticker):
     stock = yf.Ticker(ticker)
-    financials = stock.financials.T
+    financials = stock.financials.T  # years as rows
     try:
-        revenue = financials['Total Revenue'].dropna() / 1e9
+        revenue = financials['Total Revenue'].dropna() / 1e9  # billions
         net_income = financials['Net Income'].dropna() / 1e9
         return revenue, net_income, stock
     except KeyError:
-        st.warning(f"Missing 'Total Revenue' or 'Net Income' for {ticker}.")
+        print(f"\n⚠️ Missing 'Total Revenue' or 'Net Income' for {ticker}.")
         return pd.Series(), pd.Series(), None
 
 def project_growth(values, growth_rate, years=4):
@@ -24,26 +24,175 @@ def project_growth(values, growth_rate, years=4):
         projections.append(last)
     return projections
 
-# Streamlit UI
-st.title("Stock Financials & Price Projection")
+def get_historical_prices(stock, start_year, end_year):
+    start_date = f"{start_year}-01-01"
+    end_date = f"{end_year}-12-31"
+    hist = stock.history(start=start_date, end=end_date)
+    # Resample to get yearly closing price at year-end (adjusted close)
+    yearly = hist['Close'].resample('YE').last()
+    yearly.index = yearly.index.year.astype(str)
+    return yearly
 
-ticker = st.text_input("Enter Stock Ticker", value="AAPL")
-rev_growth = st.slider("Revenue Growth Rate (%)", 0.0, 100.0, 8.0) / 100
-ni_growth = st.slider("Net Income Growth Rate (%)", 0.0, 100.0, 8.0) / 100
-pe_low = st.slider("Low P/E Estimate", 1.0, 800.0, 10.0)
-pe_high = st.slider("High P/E Estimate", 1.0, 800.0, 25.0)
 
-if ticker:
-    revenue, net_income, stock = get_financials(ticker.upper())
-    if stock:
-        # You would continue adapting the logic from your `update_chart` function here
-        # Plot revenue and net income similar to your matplotlib logic
+def main():
+    st.title("Stock Financial Projection")
 
-        fig, ax = plt.subplots()
-        ax.plot(revenue.index, revenue.values, label="Revenue")
-        ax.plot(net_income.index, net_income.values, label="Net Income")
-        ax.set_title(f"{ticker} Financials")
-        ax.set_ylabel("Billions USD")
-        ax.legend()
-        ax.grid(True)
+    ticker = st.text_input("Enter stock ticker (e.g., AAPL):").upper()
+    if not ticker:
+        st.info("Please enter a ticker symbol to continue.")
+        return
+
+    revenue, net_income, stock = get_financials(ticker)
+
+    if revenue.empty or net_income.empty:
+        st.warning("⚠️ Not enough financial data to run projection.")
+        return
+
+    revenue = revenue.sort_index().tail(4)
+    net_income = net_income.sort_index().tail(4)
+
+    st.write("### Last 4 Years of Revenue (Billions):", revenue)
+    st.write("### Last 4 Years of Net Income (Billions):", net_income)
+
+    rev_growth = st.number_input("Estimated annual revenue growth rate (e.g., 0.08 for 8%)", value=0.08, format="%.4f")
+    ni_growth = st.number_input("Estimated annual net income growth rate", value=0.08, format="%.4f")
+    pe_low = st.number_input("Low P/E estimate", value=10.0)
+    pe_high = st.number_input("High P/E estimate", value=20.0)
+
+    if st.button("Run Projection"):
+        shares_outstanding = stock.info.get("sharesOutstanding", None)
+        if shares_outstanding is None:
+            st.warning("⚠️ Could not retrieve shares outstanding from Yahoo Finance.")
+            return
+        shares_outstanding = shares_outstanding / 1e9  # to billions
+        st.write(f"🧾 Shares Outstanding (from Yahoo): {shares_outstanding:.2f} billion")
+
+        eps_ttm = stock.info.get('trailingEps', None)
+        current_price = stock.info.get('currentPrice', None)
+        if eps_ttm is None or current_price is None:
+            st.warning("⚠️ Could not retrieve current EPS TTM or current stock price quote.")
+            insert_current = False
+        else:
+            insert_current = True
+            st.write(f"🔎 Current EPS (TTM): {eps_ttm:.4f}")
+            st.write(f"🔎 Current Stock Price Quote: ${current_price:.2f}")
+
+        rev_proj = project_growth(revenue.values, rev_growth, years=4)
+        ni_proj = project_growth(net_income.values, ni_growth, years=4)
+
+        hist_years = revenue.index.year.astype(int).tolist()
+        last_year = hist_years[-1]
+        proj_years = [last_year + i for i in range(1, 5)]
+
+        rev_list = list(revenue.values)
+        ni_list = list(net_income.values)
+
+        price_hist = get_historical_prices(stock, hist_years[0], last_year)
+        price_hist_list = [price_hist.get(str(y), None) for y in hist_years]
+
+        if insert_current:
+            current_year = last_year + 0.5
+            ni_current = eps_ttm * shares_outstanding
+            if len(revenue) >= 2:
+                recent_rev_growth = (revenue.values[-1] - revenue.values[-2]) / revenue.values[-2]
+                rev_current = revenue.values[-1] * (1 + recent_rev_growth)
+            else:
+                rev_current = revenue.values[-1]
+
+            price_low_proj = [(ni / shares_outstanding) * pe_low for ni in ni_proj]
+            price_high_proj = [(ni / shares_outstanding) * pe_high for ni in ni_proj]
+
+            price_low_current = eps_ttm * pe_low
+            price_high_current = eps_ttm * pe_high
+
+            all_years = hist_years + [current_year] + proj_years
+            rev_combined = rev_list + [rev_current] + rev_proj
+            ni_combined = ni_list + [ni_current] + ni_proj
+
+            price_low = [None]*len(hist_years) + [price_low_current] + price_low_proj
+            price_high = [None]*len(hist_years) + [price_high_current] + price_high_proj
+            price_hist_extended = price_hist_list + [current_price] + [None]*len(proj_years)
+        else:
+            all_years = hist_years + proj_years
+            rev_combined = rev_list + rev_proj
+            ni_combined = ni_list + ni_proj
+
+            price_low_proj = [(ni / shares_outstanding) * pe_low for ni in ni_proj]
+            price_high_proj = [(ni / shares_outstanding) * pe_high for ni in ni_proj]
+            price_low = [None]*len(hist_years) + price_low_proj
+            price_high = [None]*len(hist_years) + price_high_proj
+            price_hist_extended = price_hist_list + [None]*len(proj_years)
+
+        all_years_labels = [str(y) if int(y) == y else f"{int(y)}.5" for y in all_years]
+
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10), sharex=True)
+
+        x_vals = list(range(len(all_years)))
+        x_hist = list(range(len(hist_years)))
+        x_current = [len(hist_years)] if insert_current else []
+        x_proj = list(range(len(hist_years) + (1 if insert_current else 0), len(all_years)))
+
+        ax1.plot(x_hist, rev_combined[:len(hist_years)], label="Revenue (Historical)", marker='o', color='tab:blue')
+        ax1.plot(x_hist, ni_combined[:len(hist_years)], label="Net Income (Historical)", marker='o', color='tab:orange')
+
+        if insert_current:
+            x_prev = x_hist[-1]
+            x_curr = x_current[0]
+            x_next = x_proj[0]
+
+            # Revenue connections
+            y_rev_prev = rev_combined[x_prev]
+            y_rev_curr = rev_combined[x_curr]
+            y_rev_next = rev_combined[x_next]
+            ax1.plot([x_prev, x_curr], [y_rev_prev, y_rev_curr], linestyle='-', color='tab:blue', linewidth=1.5)
+            ax1.plot([x_curr, x_next], [y_rev_curr, y_rev_next], linestyle=':', color='tab:blue', linewidth=1.5)
+
+            # Net income connections
+            y_ni_prev = ni_combined[x_prev]
+            y_ni_curr = ni_combined[x_curr]
+            y_ni_next = ni_combined[x_next]
+            ax1.plot([x_prev, x_curr], [y_ni_prev, y_ni_curr], linestyle='-', color='tab:orange', linewidth=1.5)
+            ax1.plot([x_curr, x_next], [y_ni_curr, y_ni_next], linestyle=':', color='tab:orange', linewidth=1.5)
+
+        if insert_current:
+            ax1.plot(x_current, [rev_combined[len(hist_years)]], label="Revenue (Current, est.)", marker='o', linestyle=':', color='tab:blue')
+            ax1.plot(x_current, [ni_combined[len(hist_years)]], label="Net Income (Current, est.)", marker='o', linestyle=':', color='tab:orange')
+
+        ax1.plot(x_proj, rev_combined[-len(proj_years):], label="Revenue (Projected)", marker='o', linestyle='--', color='tab:blue')
+        ax1.plot(x_proj, ni_combined[-len(proj_years):], label="Net Income (Projected)", marker='o', linestyle='--', color='tab:orange')
+
+        ax1.set_ylabel("Billions USD")
+        ax1.set_title(f"{ticker} – Financials: 4-Year History + Current + 4-Year Projection")
+        ax1.grid(True)
+        ax1.legend()
+
+        ax2.plot(x_hist, price_hist_extended[:len(hist_years)], label="Historical Price", marker='o', color='blue')
+        if insert_current:
+            ax2.plot(x_current, [price_hist_extended[len(hist_years)]], label="Current Price (Quote)", marker='o', color='purple')
+        ax2.plot(x_proj, price_low[-len(proj_years):], label="Price Low Estimate", marker='x', linestyle='-.', color='red')
+        ax2.plot(x_proj, price_high[-len(proj_years):], label="Price High Estimate", marker='x', linestyle='-.', color='green')
+
+        ax2.set_ylabel("Stock Price (USD)")
+        ax2.set_title(f"{ticker} – Stock Price: Historical, Current & Projected")
+        ax2.grid(True)
+        ax2.legend()
+
+        plt.xticks(ticks=x_vals, labels=all_years_labels)
+
+        def plot_price_conn(x1, y1, x2, y2):
+            if y1 is not None and y2 is not None:
+                ax2.plot([x1, x2], [y1, y2], linestyle=':', color='gray')
+
+        for i in range(len(hist_years)-1):
+            plot_price_conn(x_hist[i], price_hist_extended[i], x_hist[i+1], price_hist_extended[i+1])
+        if insert_current:
+            plot_price_conn(x_hist[-1], price_hist_extended[len(hist_years)-1], x_current[0], price_hist_extended[len(hist_years)])
+            plot_price_conn(x_current[0], price_hist_extended[len(hist_years)], x_proj[0], None)
+        for i in range(len(proj_years)-1):
+            plot_price_conn(x_proj[i], price_low[-len(proj_years)+i], x_proj[i+1], price_low[-len(proj_years)+i+1])
+            plot_price_conn(x_proj[i], price_high[-len(proj_years)+i], x_proj[i+1], price_high[-len(proj_years)+i+1])
+
         st.pyplot(fig)
+
+if __name__ == "__main__":
+    main()
