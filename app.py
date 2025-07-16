@@ -54,10 +54,27 @@ def main():
     st.write("### Last 4 Years of Revenue (Billions):", revenue)
     st.write("### Last 4 Years of Net Income (Billions):", net_income)
 
-    rev_growth = st.number_input("Estimated annual revenue growth rate (e.g., 0.08 for 8%)", value=0.08, format="%.4f")
-    ni_growth = st.number_input("Estimated annual net income growth rate", value=0.08, format="%.4f")
-    pe_low = st.number_input("Low P/E estimate", value=10.0)
-    pe_high = st.number_input("High P/E estimate", value=20.0)
+    st.markdown("### 🔧 Projection Inputs")
+
+    st.markdown("**Estimated Annual Revenue Growth Rate (%)**")
+    rev_growth_slider = st.slider("Revenue Growth Slider", min_value=0.0, max_value=1.0, value=0.08, step=0.005, format="%.3f")
+    rev_growth_input = st.number_input("Or manually enter revenue growth rate", value=rev_growth_slider, step=0.005, format="%.4f")
+    rev_growth = rev_growth_input
+
+    st.markdown("**Estimated Annual Net Income Growth Rate (%)**")
+    ni_growth_slider = st.slider("Net Income Growth Slider", min_value=0.0, max_value=1.0, value=0.08, step=0.005, format="%.3f")
+    ni_growth_input = st.number_input("Or manually enter net income growth rate", value=ni_growth_slider, step=0.005, format="%.4f")
+    ni_growth = ni_growth_input
+
+    st.markdown("**Low P/E Estimate**")
+    pe_low_slider = st.slider("Low P/E Slider", min_value=10.0, max_value=100.0, value=10.0, step=1)
+    pe_low_input = st.number_input("Or manually enter Low P/E", value=pe_low_slider, step=0.5)
+    pe_low = pe_low_input
+
+    st.markdown("**High P/E Estimate**")
+    pe_high_slider = st.slider("High P/E Slider", min_value=10.0, max_value=200.0, value=20.0, step=1)
+    pe_high_input = st.number_input("Or manually enter High P/E", value=pe_high_slider, step=0.5)
+    pe_high = pe_high_input
 
     if st.button("Run Projection"):
         shares_outstanding = stock.info.get("sharesOutstanding", None)
