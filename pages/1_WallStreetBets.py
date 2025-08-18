@@ -64,7 +64,7 @@ market_cap = ticker.info.get("marketCap")
 raw_profit = df.iloc[15, 3]  # string from sheet
 str_profit = str(raw_profit).replace(",", ".")  # swap comma with dot
 Profit = pd.to_numeric(str_profit, errors="coerce")
-raw_cost = df.iloc[11, 5]
+raw_cost = df.iloc[11, 4]
 str_cost = str(raw_cost).replace(",", ".")  # swap comma with dot
 Cost = pd.to_numeric(str_cost, errors="coerce")
 raw_value = df.iloc[12, 3]  # string from sheet
