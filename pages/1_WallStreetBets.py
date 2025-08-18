@@ -38,6 +38,6 @@ Value_numeric = pd.to_numeric(Value, errors="coerce")
 margin = Value_numeric/5
 
 st.write("Current Position Value",Value)
-st.write("Total Margin",f"{margin:.2f})
+st.write("Total Margin",f"{margin:.2f}")
 st.write("Total Profit", Profit)
 
