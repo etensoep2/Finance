@@ -1,18 +1,14 @@
 import streamlit as st
 
-def main_page():
-    st.title("Stock Financial Projection")
-    st.write("... your existing code ...")
+st.title("📘 Blog Commentary")
 
-def blog_page():
-    st.title("📘 Blog Commentary")
-    st.write("Write insights, thoughts, and commentary here.")
-    st.text_area("Your notes:", height=200)
+st.write("""
+Welcome to the commentary section!  
+Here you can write analysis, insights, or market notes in a blog-style format.
+""")
 
-# Sidebar navigation
-page = st.sidebar.radio("Navigate", ["Financial Projection", "Blog Commentary"])
+st.header("Market Thoughts")
+st.write("Example: *Tech stocks are showing resilience despite market volatility.*")
 
-if page == "Financial Projection":
-    main_page()
-elif page == "Blog Commentary":
-    blog_page()
+st.header("Personal Notes")
+st.text_area("Write your own notes here:", height=200)
