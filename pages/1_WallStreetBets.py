@@ -14,21 +14,6 @@ company_name = ticker.info.get("longName")
 current_price = ticker.history(period="1d")["Close"].iloc[-1]
 pe_ratio = ticker.info.get("trailingPE")
 
-# Display in Streamlit
-
-st.header(f"{company_name} ({ticker_symbol})")
-
-# Use columns for side-by-side display
-col1, col2 = st.columns(2)
-col1.metric(label="💰 Current Price", value=f"${current_price:.2f}")
-col2.metric(label="📊 P/E Ratio (Trailing)", value=f"{pe_ratio if pe_ratio else 'N/A'}")
-col1, col2, col3 = st.columns([3, 2, 3])  # center it in col2
-with col2:
-    st.line_chart(ticker.history(period="24mo")["Close"],height=200)
-# Optional: Add a line chart for price history
-##############################################################################################
-st.header("Short Position")
-
 # Authenticate using the JSON key
 url = "https://docs.google.com/spreadsheets/d/1pE7_z49F9TkKy4obgd63b1Ioo6V0ZmM0VhmZk78XQLY/export?format=csv"
 df = pd.read_csv(url)
@@ -38,8 +23,21 @@ Value = df.iloc[12, 1]
 raw_value = df.iloc[12, 1]  # string from sheet
 clean_value = str(raw_value).replace(",", ".")  # swap comma with dot
 margin = pd.to_numeric(clean_value, errors="coerce") * 0.2
+# Display in Streamlit
 
-st.write("Current Position Value",Value)
-st.write("Total Margin",f"{margin:.2f}")
-st.write("Total Profit", Profit)
+st.header(f"{company_name} ({ticker_symbol})")
 
+# Use columns for side-by-side display
+col1, col2 = st.columns(2)
+col1.metric(label="💰 Current Price", value=f"${current_price:.2f}")
+col2.metric(label="📊 P/E Ratio (Trailing)", value=f"{pe_ratio if pe_ratio else 'N/A'}")
+col1, col2, col3 = st.columns([3, 2, 3])  # center it in col2
+with col1:
+    st.metric("💰 Current Position Value", f"${Value:,.2f}")
+    st.metric("📊 Total Margin", f"${margin:,.2f}")
+    st.metric("📈 Total Profit", f"${Profit:,.2f}")
+with col2:
+    st.line_chart(ticker.history(period="24mo")["Close"],height=200)
+# Optional: Add a line chart for price history
+##############################################################################################
+st.header("Short Position")
