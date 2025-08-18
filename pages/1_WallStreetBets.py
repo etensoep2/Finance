@@ -34,7 +34,7 @@ df = pd.read_csv(url)
 
 Profit = df.iloc[22, 1]
 Value = df.iloc[12, 1]
-margin = b14/5
+margin = Value/5
 
 st.write("Current Position Value",Value)
 st.write("Total Margin",margin)
