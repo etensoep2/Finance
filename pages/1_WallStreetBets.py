@@ -40,7 +40,7 @@ with col1:
     st.metric("📊 Total Margin", f"${margin:,.2f}")
     st.metric("📈 Total Profit", Profit)
 with col2:
-    st.metric(label="💰 Market Cap", value=f"${market_cap:.2f}"
+    st.metric(label="💰 Market Cap", value=f"${market_cap:.2f}")
     st.metric(label="💰 Current Price", value=f"${current_price:.2f}")
     st.metric(label="📊 P/E Ratio (Trailing)", value=f"{pe_ratio if pe_ratio else 'N/A'}")
     st.line_chart(ticker.history(period="24mo")["Close"],height=300)
