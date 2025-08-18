@@ -31,13 +31,13 @@ st.header(f"{company_name} ({ticker_symbol})")
 col1, col2 = st.columns(2)
 col1.metric(label="💰 Current Price", value=f"${current_price:.2f}")
 col2.metric(label="📊 P/E Ratio (Trailing)", value=f"{pe_ratio if pe_ratio else 'N/A'}")
-col1, col2, col3 = st.columns([3, 3, 1])  # center it in col2
+col1, col2 = st.columns([1, 1])  # center it in col2
 with col1:
+    st.header("Short Position")
     st.metric("💰 Current Position Value", Value)
     st.metric("📊 Total Margin", f"${margin:,.2f}")
     st.metric("📈 Total Profit", Profit)
 with col2:
-    st.line_chart(ticker.history(period="24mo")["Close"],height=200)
+    st.line_chart(ticker.history(period="24mo")["Close"],height=300)
 # Optional: Add a line chart for price history
 ##############################################################################################
-st.header("Short Position")
