@@ -35,8 +35,8 @@ df = pd.read_csv(url)
 # Display in Streamlit# Get A24 and B24
 a24 = df.iloc[22, 0]
 b24 = df.iloc[22, 1]
-b14 = df.iloc[22, 1]
-d14 = df.iloc[22, 3]
+b14 = df.iloc[12, 1]
+d14 = df.iloc[12, 3]
 
 st.write(a24, b24)
 st.write(b14, d14)
