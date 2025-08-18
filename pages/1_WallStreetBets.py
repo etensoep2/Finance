@@ -33,8 +33,10 @@ url = "https://docs.google.com/spreadsheets/d/1pE7_z49F9TkKy4obgd63b1Ioo6V0ZmM0V
 df = pd.read_csv(url)
 
 # Display in Streamlit# Get A24 and B24
-a24 = df.iloc[23, 0]
-b24 = df.iloc[23, 1]
+a24 = df.iloc[22, 0]
+b24 = df.iloc[22, 1]
+b14 = df.iloc[22, 1]
+d14 = df.iloc[22, 3]
 
-st.write("📌 Cell A24:", a24)
-st.write("📌 Cell B24:", b24)
+st.write(a24, b24)
+st.write(b14, d14)
