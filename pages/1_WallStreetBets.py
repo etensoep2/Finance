@@ -32,11 +32,11 @@ st.header("Short Position")
 url = "https://docs.google.com/spreadsheets/d/1pE7_z49F9TkKy4obgd63b1Ioo6V0ZmM0VhmZk78XQLY/export?format=csv"
 df = pd.read_csv(url)
 
-# Display in Streamlit# Get A24 and B24
-a24 = df.iloc[22, 0]
-b24 = df.iloc[22, 1]
-b14 = df.iloc[12, 1]
-d14 = df.iloc[12, 3]
+Profit = df.iloc[22, 1]
+Value = df.iloc[12, 1]
+margin = b14/5
 
-st.write(a24, b24)
-st.write(b14, d14)
+st.write("Current Position Value",Value)
+st.write("Total Margin",margin)
+st.write("Total Profit", Profit)
+
