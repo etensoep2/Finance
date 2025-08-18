@@ -22,7 +22,9 @@ df = pd.read_csv(url)
 raw_profit = df.iloc[15, 1]  # string from sheet
 str_profit = str(raw_profit).replace(",", ".")  # swap comma with dot
 Profit = pd.to_numeric(str_profit, errors="coerce")
-Cost = df.iloc[11, 2]
+raw_cost = df.iloc[11, 2]
+str_cost = str(raw_cost).replace(",", ".")  # swap comma with dot
+Cost = pd.to_numeric(str_cost, errors="coerce")
 raw_value = df.iloc[12, 1]  # string from sheet
 str_value = str(raw_value).replace(",", ".")  # swap comma with dot
 Value = pd.to_numeric(str_value, errors="coerce")
