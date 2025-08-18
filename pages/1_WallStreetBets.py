@@ -30,7 +30,11 @@ st.header("Short Position")
 
 # Authenticate using the JSON key
 url = "https://docs.google.com/spreadsheets/d/1pE7_z49F9TkKy4obgd63b1Ioo6V0ZmM0VhmZk78XQLY/export?format=csv"
-data = pd.read_csv(url)
+df = pd.read_csv(url)
 
-# Display in Streamlit
-st.dataframe(data)
+# Display in Streamlit# Get A24 and B24
+a24 = df.iloc[23, 0]
+b24 = df.iloc[23, 1]
+
+st.write("📌 Cell A24:", a24)
+st.write("📌 Cell B24:", b24)
