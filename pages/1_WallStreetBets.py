@@ -47,7 +47,7 @@ with col1:
 with col2:
     st.header("Stock Info")
     st.metric(label="💰 Current Price", value=f"${current_price:.2f}")
-    st.metric(label="📊 P/E Ratio (Trailing)", value=f"{pe_ratio:.2f if pe_ratio else 'N/A'}")
+    st.metric(label="📊 P/E Ratio (Trailing)", value=f"{pe_ratio:.2f}" if pe_ratio else 'N/A')
     st.line_chart(ticker.history(period="24mo")["Close"],height=300)
 # Optional: Add a line chart for price history
 ##############################################################################################
@@ -88,7 +88,7 @@ with col1:
 with col2:
     st.header("Stock Info")
     st.metric(label="💰 Current Price", value=f"${current_price:.2f}")
-    st.metric(label="📊 P/E Ratio (Trailing)", value=f"{pe_ratio:.2f if pe_ratio else 'N/A'}")
+    st.metric(label="📊 P/E Ratio (Trailing)", value=f"{pe_ratio:.2f}" if pe_ratio else 'N/A')
     st.line_chart(ticker.history(period="24mo")["Close"],height=300)
 # Optional: Add a line chart for price history
 
