@@ -25,3 +25,5 @@ col2.metric(label="📊 P/E Ratio (Trailing)", value=f"{pe_ratio if pe_ratio els
 
 # Optional: Add a line chart for price history
 st.line_chart(ticker.history(period="24mo")["Close"])
+
+st.header("Short Position:")
