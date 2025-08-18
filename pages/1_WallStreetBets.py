@@ -61,7 +61,7 @@ current_price = ticker.history(period="1d")["Close"].iloc[-1]
 pe_ratio = ticker.info.get("trailingPE")
 market_cap = ticker.info.get("marketCap")
 
-raw_profit = df.iloc[15, 3]  # string from sheet
+raw_profit = df.iloc[18, 3]  # string from sheet
 str_profit = str(raw_profit).replace(",", ".")  # swap comma with dot
 Profit = pd.to_numeric(str_profit, errors="coerce")
 raw_cost = df.iloc[11, 4]
