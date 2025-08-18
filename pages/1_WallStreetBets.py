@@ -19,7 +19,7 @@ market_cap = ticker.info.get("marketCap")
 url = "https://docs.google.com/spreadsheets/d/1pE7_z49F9TkKy4obgd63b1Ioo6V0ZmM0VhmZk78XQLY/export?format=csv"
 df = pd.read_csv(url)
 
-raw_profit = df.iloc[22, 1]  # string from sheet
+raw_profit = df.iloc[15, 1]  # string from sheet
 str_profit = str(raw_profit).replace(",", ".")  # swap comma with dot
 Profit = pd.to_numeric(str_profit, errors="coerce")
 Cost = df.iloc[11, 2]
