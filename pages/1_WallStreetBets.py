@@ -51,3 +51,31 @@ with col2:
     st.line_chart(ticker.history(period="24mo")["Close"],height=300)
 # Optional: Add a line chart for price history
 ##############################################################################################
+# Ticker symbol
+ticker_symbol = "LIF"
+ticker = yf.Ticker(ticker_symbol)
+
+# Fetch data
+company_name = ticker.info.get("longName")
+current_price = ticker.history(period="1d")["Close"].iloc[-1]
+pe_ratio = ticker.info.get("trailingPE")
+market_cap = ticker.info.get("marketCap")
+
+# Use columns for side-by-side display
+col1, col2 = st.columns(2)
+
+col1, col2 = st.columns([1, 1])  # center it in col2
+with col1:
+    st.header("Short Position")
+    st.metric("💰 Current Position Value", f"${Value:,.2f}")
+    st.metric("💰 Cost Basis", Cost)
+    st.metric("📊 Total Margin", f"${margin:,.2f}")
+    color = "green" if Profit > 0 else "red"
+    st.markdown(f'<div style="font-size:28px;">📈 Profit: <span style="color:{"green" if Profit>0 else "red"}">${Profit:,.2f}</span></div>', unsafe_allow_html=True)
+with col2:
+    st.header("Stock Info")
+    st.metric(label="💰 Current Price", value=f"${current_price:.2f}")
+    st.metric(label="📊 P/E Ratio (Trailing)", value=f"{pe_ratio if pe_ratio else 'N/A'}")
+    st.line_chart(ticker.history(period="24mo")["Close"],height=300)
+# Optional: Add a line chart for price history
+
