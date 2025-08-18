@@ -40,7 +40,8 @@ with col1:
     st.metric("💰 Current Position Value", f"${Value:,.2f}")
     st.metric("💰 Cost Basis", Cost)
     st.metric("📊 Total Margin", f"${margin:,.2f}")
-    st.metric("📈 Total Profit", f"${Profit:,.2f}", delta=f"${Profit:,.2f}")
+    color = "green" if Profit > 0 else "red"
+    st.markdown(f"<span style='color:{color}'>Profit: ${Profit:,.2f}</span>", unsafe_allow_html=True)
 with col2:
     st.header("Stock Info")
     st.metric(label="💰 Current Price", value=f"${current_price:.2f}")
