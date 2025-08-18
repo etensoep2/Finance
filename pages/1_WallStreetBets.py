@@ -41,7 +41,7 @@ with col1:
     st.metric("💰 Cost Basis", Cost)
     st.metric("📊 Total Margin", f"${margin:,.2f}")
     color = "green" if Profit > 0 else "red"
-    st.markdown(f"<div style="font-size:28px;">📈 Profit: <span style="color:{'green' if Profit>0 else 'red'}">${Profit:,.2f}</span></div>", unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:28px;">📈 Profit: <span style="color:{"green" if Profit>0 else "red"}">${Profit:,.2f}</span></div>', unsafe_allow_html=True)
 with col2:
     st.header("Stock Info")
     st.metric(label="💰 Current Price", value=f"${current_price:.2f}")
