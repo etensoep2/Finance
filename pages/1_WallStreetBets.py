@@ -11,7 +11,7 @@ company_name1 = info1.get("longName", "N/A")
 current_price1 = info1.get("currentPrice", "N/A")
 pe_ratio1 = info1.get("trailingPE", "N/A")
 
-st.write(f"### {company_name} ({ticker})")
-st.write(f"💰 Current Price: ${current_price}")
-st.write(f"📊 P/E Ratio (Trailing): {pe_ratio}")
+st.write(f"### {company_name1} ({ticker})")
+st.write(f"💰 Current Price: ${current_price1}")
+st.write(f"📊 P/E Ratio (Trailing): {pe_ratio1}")
 
