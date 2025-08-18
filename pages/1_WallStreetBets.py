@@ -25,5 +25,12 @@ col2.metric(label="📊 P/E Ratio (Trailing)", value=f"{pe_ratio if pe_ratio els
 
 # Optional: Add a line chart for price history
 st.line_chart(ticker.history(period="24mo")["Close"])
+##############################################################################################
+st.header("Short Position")
 
-st.header("Short Position:")
+# Authenticate using the JSON key
+url = "https://docs.google.com/spreadsheets/d/1pE7_z49F9TkKy4obgd63b1Ioo6V0ZmM0VhmZk78XQLY/export?format=csv"
+data = pd.read_csv(url)
+
+# Display in Streamlit
+st.dataframe(data)
