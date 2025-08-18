@@ -72,6 +72,8 @@ str_value = str(raw_value).replace(",", ".")  # swap comma with dot
 Value = pd.to_numeric(str_value, errors="coerce")
 margin = Value * 0.2
 
+st.header(f"{company_name} ({ticker_symbol})")
+
 # Use columns for side-by-side display
 col1, col2 = st.columns(2)
 
