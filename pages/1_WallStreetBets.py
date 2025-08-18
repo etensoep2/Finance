@@ -5,22 +5,23 @@ import matplotlib.pyplot as plt
 
 st.title("Wall Street Bets")
 
-# Choose a stock ticker (e.g., Apple)
+# Ticker symbol
 ticker_symbol = "PLTR"
-
-# Create ticker object
 ticker = yf.Ticker(ticker_symbol)
 
-# Get stock price
-price = ticker.history(period="1d")["Close"].iloc[-1]
-
-# Get company name
+# Fetch data
 company_name = ticker.info.get("longName")
-
-# Get PE ratio (Trailing P/E)
+current_price = ticker.history(period="1d")["Close"].iloc[-1]
 pe_ratio = ticker.info.get("trailingPE")
 
-st.write(f"### {company_name} ({ticker})")
-st.write(f"💰 Current Price: ${current_price}")
-st.write(f"📊 P/E Ratio (Trailing): {pe_ratio}")
+# Display in Streamlit
 
+st.header(f"{company_name} ({ticker_symbol})")
+
+# Use columns for side-by-side display
+col1, col2 = st.columns(2)
+col1.metric(label="💰 Current Price", value=f"${current_price:.2f}")
+col2.metric(label="📊 P/E Ratio (Trailing)", value=f"{pe_ratio if pe_ratio else 'N/A'}")
+
+# Optional: Add a line chart for price history
+st.line_chart(ticker.history(period="1mo")["Close"])
