@@ -26,7 +26,7 @@ Cost = df.iloc[11, 2]
 raw_value = df.iloc[12, 1]  # string from sheet
 str_value = str(raw_value).replace(",", ".")  # swap comma with dot
 Value = pd.to_numeric(str_value, errors="coerce")
-margin = pd.to_numeric(clean_value, errors="coerce") * 0.2
+margin = Value * 0.2
 # Display in Streamlit
 
 st.header(f"{company_name} ({ticker_symbol})")
