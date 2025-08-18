@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 st.title("Wall Street Bets")
 
 stock1 = yf.Ticker("PLTR")
-info1 = stock1.info
+info1 = stock1.get_info()
 company_name1 = info1.get("longName", "N/A")
 current_price1 = info1.get("currentPrice", "N/A")
 pe_ratio1 = info1.get("trailingPE", "N/A")
