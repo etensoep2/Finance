@@ -20,10 +20,6 @@ company_name = ticker.info.get("longName")
 # Get PE ratio (Trailing P/E)
 pe_ratio = ticker.info.get("trailingPE")
 
-print(f"Company: {company_name}")
-print(f"Price: {price}")
-print(f"P/E Ratio: {pe_ratio}")
-
 st.write(f"### {company_name} ({ticker})")
 st.write(f"💰 Current Price: ${current_price}")
 st.write(f"📊 P/E Ratio (Trailing): {pe_ratio}")
