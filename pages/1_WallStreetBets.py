@@ -5,13 +5,26 @@ import matplotlib.pyplot as plt
 
 st.title("Wall Street Bets")
 
-stock1 = yf.Ticker("PLTR")
-info1 = stock1.get_info()
-company_name1 = info1.get("longName", stock1)
-current_price1 = info1.get("currentPrice", stock1)
-pe_ratio1 = info1.get("trailingPE", stock1)
+# Choose a stock ticker (e.g., Apple)
+ticker_symbol = "PLTR"
 
-st.write(f"### {company_name1} ({ticker})")
-st.write(f"💰 Current Price: ${current_price1}")
-st.write(f"📊 P/E Ratio (Trailing): {pe_ratio1}")
+# Create ticker object
+ticker = yf.Ticker(ticker_symbol)
+
+# Get stock price
+price = ticker.history(period="1d")["Close"].iloc[-1]
+
+# Get company name
+company_name = ticker.info.get("longName")
+
+# Get PE ratio (Trailing P/E)
+pe_ratio = ticker.info.get("trailingPE")
+
+print(f"Company: {company_name}")
+print(f"Price: {price}")
+print(f"P/E Ratio: {pe_ratio}")
+
+st.write(f"### {company_name} ({ticker})")
+st.write(f"💰 Current Price: ${current_price}")
+st.write(f"📊 P/E Ratio (Trailing): {pe_ratio}")
 
